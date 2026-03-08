@@ -11,7 +11,27 @@
 5. Vercel will auto-detect Vite settings
 6. Click "Deploy"
 
+**Important**: The `vercel.json` file is already configured to handle client-side routing properly. No additional configuration needed!
+
 Your site will be live at: `https://chainvoice.vercel.app`
+
+### Vercel Configuration (Already Included)
+
+The project includes a `vercel.json` file that:
+- Rewrites all routes to `/index.html` for client-side routing
+- Adds proper caching headers for assets
+- Prevents 404 errors on page refresh
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
 
 ### Option 2: Netlify
 

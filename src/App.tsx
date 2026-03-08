@@ -18,6 +18,7 @@ import Audit from './pages/regulator/Audit';
 import Analytics from './pages/regulator/Analytics';
 import Alerts from './pages/regulator/Alerts';
 import BlockchainExplorer from './pages/shared/BlockchainExplorer';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -46,6 +47,9 @@ function App() {
         <Route path="/regulator/alerts" element={<Alerts />} />
         
         <Route path="/shared/blockchain-explorer" element={<BlockchainExplorer />} />
+        
+        {/* 404 Catch-all route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
