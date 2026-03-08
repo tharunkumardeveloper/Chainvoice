@@ -5,21 +5,21 @@ interface LogoProps {
 
 export default function Logo({ size = 'md', showText = true }: LogoProps) {
   const sizes = {
-    sm: 'w-8 h-8',
-    md: 'w-10 h-10',
-    lg: 'w-12 h-12',
+    sm: 'w-7 h-7 sm:w-8 sm:h-8',
+    md: 'w-9 h-9 sm:w-10 sm:h-10',
+    lg: 'w-10 h-10 sm:w-12 sm:h-12',
   };
 
   const textSizes = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
+    sm: 'text-base sm:text-lg',
+    md: 'text-lg sm:text-xl',
+    lg: 'text-xl sm:text-2xl',
   };
 
   return (
     <div className="flex items-center space-x-2">
       {/* Logo Icon - Hexagonal blockchain-inspired design */}
-      <div className={`${sizes[size]} relative flex items-center justify-center`}>
+      <div className={`${sizes[size]} relative flex items-center justify-center flex-shrink-0`}>
         {/* Outer hexagon */}
         <svg viewBox="0 0 100 100" className="w-full h-full">
           <defs>
@@ -47,7 +47,7 @@ export default function Logo({ size = 'md', showText = true }: LogoProps) {
         </svg>
       </div>
       {showText && (
-        <span className={`font-display ${textSizes[size]} font-bold`}>
+        <span className={`font-display ${textSizes[size]} font-bold whitespace-nowrap`}>
           ChainVoice
         </span>
       )}

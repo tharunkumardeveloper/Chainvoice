@@ -9,6 +9,7 @@ interface NavbarProps {
 export default function Navbar({ role }: NavbarProps) {
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [notificationCount] = useState(3);
 
   const handleLogout = () => {
@@ -20,13 +21,27 @@ export default function Navbar({ role }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-          <Link to="/">
-            <Logo size="md" />
+          <Link to="/" className="flex-shrink-0">
+            <Logo size="sm" showText={true} />
           </Link>
 
           {role && (
             <>
-              {/* Center Navigation */}
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="md:hidden p-2 rounded-lg hover:bg-navy transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {showMobileMenu ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+
+              {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-6">
                 {role === 'msme' && (
                   <>
@@ -129,6 +144,42 @@ export default function Navbar({ role }: NavbarProps) {
                   )}
                 </div>
               </div>
+
+              {/* Mobile Menu */}
+              {showMobileMenu && (
+                <div className="md:hidden absolute top-16 left-0 right-0 bg-navy-light border-b border-navy-lighter shadow-lg">
+                  <div className="px-4 py-4 space-y-3">
+                    {role === 'msme' && (
+                      <>
+                        <Link to="/msme/dashboard" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
+                        <Link to="/msme/invoices" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>My Invoices</Link>
+                        <Link to="/msme/tokens" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>FAB Tokens</Link>
+                        <Link to="/msme/financing" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Apply Financing</Link>
+                      </>
+                    )}
+                    {role === 'lender' && (
+                      <>
+                        <Link to="/lender/dashboard" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
+                        <Link to="/lender/verify" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Verify</Link>
+                        <Link to="/lender/pipeline" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Pipeline</Link>
+                        <Link to="/lender/portfolio" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Portfolio</Link>
+                      </>
+                    )}
+                    {role === 'regulator' && (
+                      <>
+                        <Link to="/regulator/dashboard" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
+                        <Link to="/regulator/audit" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Audit</Link>
+                        <Link to="/regulator/analytics" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Analytics</Link>
+                        <Link to="/regulator/alerts" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Alerts</Link>
+                      </>
+                    )}
+                    <Link to="/shared/blockchain-explorer" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Explorer</Link>
+                    <button onClick={handleLogout} className="block w-full text-left py-2 text-crimson hover:text-crimson/80 transition-colors">
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

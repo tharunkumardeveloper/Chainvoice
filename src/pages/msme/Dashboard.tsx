@@ -15,7 +15,7 @@ export default function MsmeDashboard() {
         </div>
 
         {/* KPI Cards Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <KPICard
             title="Active Invoices"
             value="24"
@@ -51,9 +51,9 @@ export default function MsmeDashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Recent Invoices Table - Takes 2 columns */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 overflow-x-auto">
             <RecentInvoicesTable />
           </div>
 

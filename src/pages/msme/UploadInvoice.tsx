@@ -120,15 +120,15 @@ export default function UploadInvoice() {
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center justify-center space-x-4">
+        <div className="flex items-center justify-center space-x-2 sm:space-x-4 overflow-x-auto pb-2">
           {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+            <div key={s} className="flex items-center flex-shrink-0">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base transition-all ${
                 step > s ? 'bg-emerald text-white' : step === s ? 'bg-cyan text-navy' : 'bg-navy-lighter text-gray-400'
               }`}>
                 {step > s ? '✓' : s}
               </div>
-              {s < 3 && <div className={`w-16 h-0.5 mx-2 ${step > s ? 'bg-emerald' : 'bg-navy-lighter'}`}></div>}
+              {s < 3 && <div className={`w-8 sm:w-16 h-0.5 mx-1 sm:mx-2 ${step > s ? 'bg-emerald' : 'bg-navy-lighter'}`}></div>}
             </div>
           ))}
         </div>

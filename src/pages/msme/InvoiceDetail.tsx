@@ -15,26 +15,29 @@ export default function InvoiceDetail() {
         </div>
 
         {/* Header */}
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-4">
-            <h1 className="font-display text-4xl font-bold font-mono">INV-2024-0891</h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold font-mono break-all">INV-2024-0891</h1>
             <span className="badge-success">🟢 Financed</span>
           </div>
-          <div className="flex space-x-3">
-            <button className="btn-secondary flex items-center space-x-2">
+          <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+            <button className="btn-secondary flex items-center justify-center space-x-2 flex-1 sm:flex-none">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span>Download PDF</span>
+              <span className="hidden sm:inline">Download PDF</span>
+              <span className="sm:hidden">PDF</span>
             </button>
-            <button className="btn-secondary flex items-center space-x-2">
+            <button className="btn-secondary flex items-center justify-center space-x-2 flex-1 sm:flex-none">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
-              <span>Share with Lender</span>
+              <span className="hidden sm:inline">Share with Lender</span>
+              <span className="sm:hidden">Share</span>
             </button>
-            <button className="btn-secondary text-crimson border-crimson/30 hover:bg-crimson/10">
-              Report Issue
+            <button className="btn-secondary text-crimson border-crimson/30 hover:bg-crimson/10 flex-1 sm:flex-none">
+              <span className="hidden sm:inline">Report Issue</span>
+              <span className="sm:hidden">Report</span>
             </button>
           </div>
         </div>
