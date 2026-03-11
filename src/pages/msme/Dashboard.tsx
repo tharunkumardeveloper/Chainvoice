@@ -1,9 +1,19 @@
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import { mockInvoices } from '../../data/mockInvoices';
+import { useState } from 'react';
 
 export default function MsmeDashboard() {
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? 'Good morning' : currentHour < 18 ? 'Good afternoon' : 'Good evening';
+  const [erpConnected, setErpConnected] = useState(false);
+
+  const stats = {
+    activeInvoices: mockInvoices.filter(inv => ['pending', 'verified', 'in-progress'].includes(inv.status)).length,
+    totalFinanced: mockInvoices.filter(inv => inv.status === 'financed').reduce((sum, inv) => sum + (inv.financedAmount || 0), 0),
+    pendingVerification: mockInvoices.filter(inv => inv.status === 'pending').length,
+    avgVerificationTime: '28sec',
+  };
 
   return (
     <DashboardLayout role="msme">
@@ -14,27 +24,68 @@ export default function MsmeDashboard() {
           <p className="text-gray-400">Here's your invoice financing snapshot</p>
         </div>
 
+        {/* ERP Connection Banner */}
+        {!erpConnected && (
+          <div className="card bg-gradient-to-r from-cyan/10 to-emerald/10 border-cyan/30">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start space-x-4">
+                <div className="w-12 h-12 bg-cyan/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold mb-1">Connect Your ERP System</h3>
+                  <p className="text-sm text-gray-400">Automatically sync invoices from Tally, SAP, Zoho Books, or QuickBooks</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setErpConnected(true)}
+                className="btn-primary whitespace-nowrap"
+              >
+                Connect ERP
+              </button>
+            </div>
+          </div>
+        )}
+
+        {erpConnected && (
+          <div className="card bg-gradient-to-r from-emerald/10 to-cyan/10 border-emerald/30">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-emerald/20 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-medium">ERP Connected: Tally Prime</p>
+                <p className="text-sm text-gray-400">Last synced: 2 minutes ago</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* KPI Cards Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <KPICard
             title="Active Invoices"
-            value="24"
-            subtitle="8 pending verification"
+            value={stats.activeInvoices.toString()}
+            subtitle={`${stats.pendingVerification} pending verification`}
             icon="📄"
             color="cyan"
             borderColor="border-l-4 border-cyan"
           />
           <KPICard
-            title="FAB Tokens Held"
-            value="6"
-            subtitle="₹48L financing eligible"
-            icon="⬡"
+            title="Stored Documents"
+            value={mockInvoices.length.toString()}
+            subtitle="Securely stored"
+            icon="💾"
             color="amber"
             borderColor="border-l-4 border-amber"
           />
           <KPICard
             title="Total Financed"
-            value="₹2.4 Cr"
+            value={`₹${(stats.totalFinanced / 100000).toFixed(1)}L`}
             subtitle="This quarter"
             icon="₹"
             color="emerald"
@@ -42,7 +93,7 @@ export default function MsmeDashboard() {
           />
           <KPICard
             title="Avg Verification Time"
-            value="28sec"
+            value={stats.avgVerificationTime}
             subtitle="vs 3 days traditional"
             icon="⚡"
             color="cyan"
@@ -52,12 +103,9 @@ export default function MsmeDashboard() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Recent Invoices Table - Takes 2 columns */}
           <div className="lg:col-span-2 overflow-x-auto">
             <RecentInvoicesTable />
           </div>
-
-          {/* Activity Timeline - Takes 1 column */}
           <div>
             <ActivityTimeline />
           </div>
@@ -94,22 +142,16 @@ function KPICard({ title, value, subtitle, icon, color, borderColor }: KPICardPr
 }
 
 function RecentInvoicesTable() {
-  const invoices = [
-    { id: 'INV-2024-0891', buyer: 'Reliance Retail', amount: 420000, date: '12 Mar 2025', gstStatus: 'verified', fabToken: 'FAB#0x7f3a', status: 'financed' },
-    { id: 'INV-2024-0890', buyer: 'Future Group', amount: 285000, date: '11 Mar 2025', gstStatus: 'verified', fabToken: 'FAB#0x8e2b', status: 'fab-issued' },
-    { id: 'INV-2024-0889', buyer: 'DMart Stores', amount: 195000, date: '10 Mar 2025', gstStatus: 'duplicate', fabToken: '-', status: 'rejected' },
-    { id: 'INV-2024-0888', buyer: 'Shoppers Stop', amount: 340000, date: '09 Mar 2025', gstStatus: 'verified', fabToken: 'FAB#0x6c4d', status: 'gst-verified' },
-    { id: 'INV-2024-0887', buyer: 'Lifestyle Stores', amount: 520000, date: '08 Mar 2025', gstStatus: 'pending', fabToken: '-', status: 'pending' },
-  ];
+  const recentInvoices = mockInvoices.slice(0, 5);
 
   const getStatusBadge = (status: string) => {
     const badges = {
       'pending': { label: '🟡 Pending Verification', class: 'badge-warning' },
-      'gst-verified': { label: '🔵 GST Verified', class: 'badge-info' },
-      'fab-issued': { label: '🟠 FAB Token Issued', class: 'badge bg-amber/20 text-amber border border-amber/30' },
+      'verified': { label: '🔵 Verified', class: 'badge-info' },
+      'in-progress': { label: '🟠 In Progress', class: 'badge bg-amber/20 text-amber border border-amber/30' },
       'financed': { label: '🟢 Financed', class: 'badge-success' },
-      'rejected': { label: '🔴 Duplicate Detected', class: 'badge-error' },
-      'repaid': { label: '⚫ Repaid', class: 'badge bg-gray-600/20 text-gray-400 border border-gray-600/30' },
+      'rejected': { label: '🔴 Rejected', class: 'badge-error' },
+      'paid': { label: '⚫ Paid', class: 'badge bg-gray-600/20 text-gray-400 border border-gray-600/30' },
     };
     return badges[status as keyof typeof badges] || badges.pending;
   };
@@ -132,13 +174,12 @@ function RecentInvoicesTable() {
               <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">Buyer Name</th>
               <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">Amount</th>
               <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">Upload Date</th>
-              <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">FAB Token</th>
               <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">Status</th>
               <th className="text-left py-3 px-3 font-medium text-gray-400 text-sm">Action</th>
             </tr>
           </thead>
           <tbody>
-            {invoices.map((inv) => {
+            {recentInvoices.map((inv) => {
               const statusBadge = getStatusBadge(inv.status);
               return (
                 <tr 
@@ -146,11 +187,10 @@ function RecentInvoicesTable() {
                   className="border-b border-navy-lighter hover:bg-navy-lighter/50 transition-colors cursor-pointer"
                   onClick={() => window.location.href = `/msme/invoices/${inv.id}`}
                 >
-                  <td className="py-4 px-3 font-mono text-sm text-cyan">{inv.id}</td>
-                  <td className="py-4 px-3 text-sm">{inv.buyer}</td>
+                  <td className="py-4 px-3 font-mono text-sm text-cyan">{inv.invoiceNumber}</td>
+                  <td className="py-4 px-3 text-sm">{inv.buyerName}</td>
                   <td className="py-4 px-3 font-mono font-bold text-sm">₹{inv.amount.toLocaleString()}</td>
-                  <td className="py-4 px-3 text-gray-400 text-sm">{inv.date}</td>
-                  <td className="py-4 px-3 font-mono text-xs text-gray-400">{inv.fabToken}</td>
+                  <td className="py-4 px-3 text-gray-400 text-sm">{new Date(inv.uploadedAt).toLocaleDateString()}</td>
                   <td className="py-4 px-3">
                     <span className={statusBadge.class}>{statusBadge.label}</span>
                   </td>
@@ -173,11 +213,11 @@ function RecentInvoicesTable() {
 
 function ActivityTimeline() {
   const activities = [
-    { icon: '🟢', time: '2 min ago', text: 'FAB Token minted for INV-891', color: 'emerald' },
-    { icon: '🔵', time: '1 hr ago', text: 'GST verification completed', color: 'cyan' },
-    { icon: '🟡', time: '3 hr ago', text: 'Invoice INV-890 uploaded to IPFS', color: 'amber' },
-    { icon: '🔴', time: 'Yesterday', text: 'Duplicate detected — INV-889 rejected', color: 'crimson' },
-    { icon: '🟢', time: '2 days ago', text: '₹4.2L disbursed by Bajaj Finserv', color: 'emerald' },
+    { icon: '🟢', time: '2 min ago', text: 'Invoice INV-2024-0891 financed by Bajaj Finserv', color: 'emerald' },
+    { icon: '🔵', time: '1 hr ago', text: 'Document verification completed for INV-2024-0890', color: 'cyan' },
+    { icon: '🟡', time: '3 hr ago', text: 'Invoice INV-2024-0887 uploaded and stored', color: 'amber' },
+    { icon: '🔴', time: 'Yesterday', text: 'Duplicate detected — INV-2024-0889 rejected', color: 'crimson' },
+    { icon: '🟢', time: '2 days ago', text: '₹3.4L disbursed by HDFC Bank', color: 'emerald' },
   ];
 
   return (
