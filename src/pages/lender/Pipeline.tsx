@@ -170,9 +170,12 @@ export default function Pipeline() {
                             Process →
                           </Link>
                         ) : (
-                          <button className="text-gray-400 hover:text-cyan text-sm font-medium">
+                          <Link 
+                            to="/lender/verify"
+                            className="text-gray-400 hover:text-cyan text-sm font-medium"
+                          >
                             View Details
-                          </button>
+                          </Link>
                         )}
                       </td>
                     </tr>
