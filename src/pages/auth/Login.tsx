@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Logo from '../../components/Logo';
 import { saveUser } from '../../utils/auth';
 
 export default function Login() {
-  const navigate = useNavigate();
   const [role, setRole] = useState<'msme' | 'lender' | 'regulator'>('msme');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('Login clicked, role:', role);
     
     // Save user to localStorage
     const user = {
@@ -21,8 +22,14 @@ export default function Login() {
       loggedInAt: new Date().toISOString(),
     };
     
+    console.log('Saving user:', user);
     saveUser(user);
-    navigate(`/${role}/dashboard`);
+    
+    const targetPath = `/${role}/dashboard`;
+    console.log('Navigating to:', targetPath);
+    
+    // Force navigation
+    window.location.href = targetPath;
   };
 
   const roleColors = {
@@ -68,6 +75,73 @@ export default function Login() {
                 {r === 'msme' ? 'MSME' : r === 'lender' ? 'Lender / NBFC' : 'Regulator'}
               </button>
             ))}
+          </div>
+
+          {/* Quick Login Buttons for Demo */}
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+            <p className="text-amber-400 text-sm mb-3 font-medium">🚀 Quick Demo Login (No password required)</p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('msme');
+                  setTimeout(() => {
+                    const user = {
+                      name: 'Priya Textiles',
+                      gstin: '27AAAPZ1234N1Z5',
+                      role: 'msme' as const,
+                      email: 'msme@chainvoice.com',
+                      loggedInAt: new Date().toISOString(),
+                    };
+                    saveUser(user);
+                    window.location.href = '/msme/dashboard';
+                  }, 100);
+                }}
+                className="btn-primary text-xs py-2"
+              >
+                MSME →
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('lender');
+                  setTimeout(() => {
+                    const user = {
+                      name: 'Bajaj Finserv',
+                      gstin: '27AAABF5678M1Z9',
+                      role: 'lender' as const,
+                      email: 'lender@chainvoice.com',
+                      loggedInAt: new Date().toISOString(),
+                    };
+                    saveUser(user);
+                    window.location.href = '/lender/dashboard';
+                  }, 100);
+                }}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-lg text-xs py-2 transition-all"
+              >
+                Lender →
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('regulator');
+                  setTimeout(() => {
+                    const user = {
+                      name: 'RBI Regulator',
+                      gstin: 'N/A',
+                      role: 'regulator' as const,
+                      email: 'regulator@chainvoice.com',
+                      loggedInAt: new Date().toISOString(),
+                    };
+                    saveUser(user);
+                    window.location.href = '/regulator/dashboard';
+                  }, 100);
+                }}
+                className="bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg text-xs py-2 transition-all"
+              >
+                Regulator →
+              </button>
+            </div>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
