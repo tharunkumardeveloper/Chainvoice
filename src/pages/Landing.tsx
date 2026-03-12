@@ -210,9 +210,9 @@ function HowItWorks() {
             <div className="w-16 h-16 bg-emerald/10 rounded-xl flex items-center justify-center mb-6 mx-auto">
               <span className="text-4xl">🛡️</span>
             </div>
-            <h3 className="font-display text-2xl font-bold mb-4 text-center">GST Oracle Verifies</h3>
+            <h3 className="font-display text-2xl font-bold mb-4 text-center">Hash Verification</h3>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Async oracle hits GSTN API → confirms invoice legitimacy → FAB Token minted on Hyperledger
+              SHA-256 hash computed → stored on Hyperledger Fabric → enables instant tamper detection
             </p>
             <div className="inline-flex px-3 py-1 bg-emerald/10 border border-emerald/30 rounded-full text-emerald text-sm font-medium">
               Hyperledger Fabric
@@ -226,7 +226,7 @@ function HowItWorks() {
             </div>
             <h3 className="font-display text-2xl font-bold mb-4 text-center">Lender Disburses</h3>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Lender checks FAB Token → disburses only once → token burned → repayment tracked on-chain
+              Lender verifies hash → disburses funds → transaction recorded on-chain → repayment tracked
             </p>
             <div className="inline-flex px-3 py-1 bg-amber/10 border border-amber/30 rounded-full text-amber text-sm font-medium">
               Smart Contract

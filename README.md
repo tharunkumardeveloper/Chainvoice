@@ -16,15 +16,15 @@
 ## 🌟 Features
 
 ### For MSMEs
-- 📤 **Upload Invoices** - Drag & drop PDF/XML with OCR extraction
-- 🪙 **FAB Tokens** - Fungible Asset-Backed tokens for verified invoices
+- 📤 **Upload Invoices** - Drag & drop PDF/XML with Odoo ERP integration
+- 🔐 **Hash Verification** - SHA-256 cryptographic security on blockchain
 - 💰 **Apply for Financing** - Get instant capital against verified invoices
 - 📊 **Real-time Dashboard** - Track invoice status and financing
 
 ### For Lenders
-- ✅ **Verify Invoices** - Blockchain-based duplicate detection
+- ✅ **Verify Invoices** - Blockchain-based hash verification
 - 🔍 **Risk Assessment** - AI-powered credit scoring
-- 💳 **Disburse Funds** - One-click financing with FAB token locking
+- 💳 **Disburse Funds** - One-click financing with hash verification
 - 📈 **Portfolio Management** - Track active financing and returns
 
 ### For Regulators

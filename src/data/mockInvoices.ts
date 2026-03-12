@@ -1,32 +1,4 @@
-export interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  amount: number;
-  currency: string;
-  issueDate: string;
-  dueDate: string;
-  status: 'pending' | 'verified' | 'financed' | 'in-progress' | 'paid' | 'rejected';
-  buyerName: string;
-  buyerGSTIN: string;
-  sellerName: string;
-  sellerGSTIN: string;
-  description: string;
-  items: Array<{
-    description: string;
-    quantity: number;
-    rate: number;
-    amount: number;
-  }>;
-  gstAmount: number;
-  totalAmount: number;
-  ipfsHash: string;
-  blockchainTxHash?: string;
-  financedAmount?: number;
-  lender?: string;
-  uploadedAt: string;
-  verifiedAt?: string;
-  financedAt?: string;
-}
+import { Invoice } from '../types';
 
 export const mockInvoices: Invoice[] = [
   {
@@ -49,6 +21,7 @@ export const mockInvoices: Invoice[] = [
     gstAmount: 75600,
     totalAmount: 495600,
     ipfsHash: 'QmX7f3a9b2c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d',
+    sha256Hash: '3f4a8b9c2d1e5f6a7b8c9d0e1f2a3b4c5d6e7f8a',
     blockchainTxHash: '0xabc123def456789abc123def456789abc123def456789abc123def456789abc1',
     financedAmount: 350000,
     lender: 'Bajaj Finserv NBFC',

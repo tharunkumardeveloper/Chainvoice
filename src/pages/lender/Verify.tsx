@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import { downloadHashVerificationCertificate } from '../../utils/pdfGenerator';
 
 export default function Verify() {
   const [file, setFile] = useState<File | null>(null);
@@ -11,6 +12,22 @@ export default function Verify() {
   const [showDemoPanel, setShowDemoPanel] = useState(false);
   const [selectedFinancingStatus, setSelectedFinancingStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDownloadCertificate = () => {
+    if (verificationResult) {
+      downloadHashVerificationCertificate({
+        invoiceNumber: 'INV-2024-0891',
+        sellerName: 'Priya Textiles',
+        buyerName: 'Reliance Retail',
+        amount: 420000,
+        uploadedHash,
+        onChainHash,
+        isMatch: verificationResult === 'match',
+        verifiedBy: 'Bajaj Finserv',
+        verificationDate: new Date().toLocaleString('en-IN'),
+      });
+    }
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -262,6 +279,15 @@ export default function Verify() {
                     ? 'You may proceed with financing evaluation.'
                     : 'Do NOT proceed with financing. Flag for investigation.'}
                 </p>
+                <button 
+                  onClick={handleDownloadCertificate}
+                  className="mt-4 btn-secondary flex items-center space-x-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Download Verification Certificate</span>
+                </button>
               </div>
             </div>
           </div>
