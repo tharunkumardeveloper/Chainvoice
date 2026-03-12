@@ -8,6 +8,8 @@ import UploadInvoice from './pages/msme/UploadInvoice';
 import InvoiceDetail from './pages/msme/InvoiceDetail';
 import Tokens from './pages/msme/Tokens';
 import Financing from './pages/msme/Financing';
+import ErpIntegration from './pages/msme/ErpIntegration';
+import IpfsStorage from './pages/msme/IpfsStorage';
 import LenderDashboard from './pages/lender/Dashboard';
 import Verify from './pages/lender/Verify';
 import Pipeline from './pages/lender/Pipeline';
@@ -34,6 +36,8 @@ function App() {
         <Route path="/msme/invoices/:id" element={<InvoiceDetail />} />
         <Route path="/msme/tokens" element={<Tokens />} />
         <Route path="/msme/financing" element={<Financing />} />
+        <Route path="/msme/erp" element={<ErpIntegration />} />
+        <Route path="/msme/ipfs" element={<IpfsStorage />} />
         
         <Route path="/lender/dashboard" element={<LenderDashboard />} />
         <Route path="/lender/verify" element={<Verify />} />

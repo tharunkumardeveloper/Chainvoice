@@ -1,14 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../components/Logo';
+import { saveUser } from '../../utils/auth';
 
 export default function Login() {
   const navigate = useNavigate();
   const [role, setRole] = useState<'msme' | 'lender' | 'regulator'>('msme');
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Save user to localStorage
+    const user = {
+      name: role === 'msme' ? 'Priya Textiles' : role === 'lender' ? 'Bajaj Finserv' : 'RBI Regulator',
+      gstin: role === 'msme' ? '27AAAPZ1234N1Z5' : role === 'lender' ? '27AAABF5678M1Z9' : 'N/A',
+      role,
+      email: email || `${role}@chainvoice.com`,
+      loggedInAt: new Date().toISOString(),
+    };
+    
+    saveUser(user);
     navigate(`/${role}/dashboard`);
   };
 
@@ -70,7 +83,9 @@ export default function Login() {
                 <input 
                   type="text" 
                   className="input w-full pl-12" 
-                  placeholder="yourgstin@domain.com" 
+                  placeholder="yourgstin@domain.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required 
                 />
               </div>

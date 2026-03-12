@@ -1,410 +1,379 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
+import { mockOdooInvoices } from '../../data/mockOdoo';
 
 export default function UploadInvoice() {
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [step, setStep] = useState(1);
-  const [file, setFile] = useState<File | null>(null);
-  const [dragActive, setDragActive] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [hash, setHash] = useState('');
-  const [ipfsStatus, setIpfsStatus] = useState<'idle' | 'computing' | 'pinning' | 'pinned'>('idle');
-  const [gstStatus, setGstStatus] = useState<'idle' | 'queued' | 'checking' | 'verified'>('idle');
-  const [financingAmount, setFinancingAmount] = useState(350000);
-  
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedOdooInvoice, setSelectedOdooInvoice] = useState('');
+  const [ipfsProgress, setIpfsProgress] = useState(0);
+  const [ipfsCID, setIpfsCID] = useState('');
+  const [sha256Hash, setSha256Hash] = useState('');
+  const [hashGenerating, setHashGenerating] = useState(false);
+  const [ipfsProcessing, setIpfsProcessing] = useState(false);
+  const [txHash, setTxHash] = useState('');
+
   const [formData, setFormData] = useState({
     invoiceNumber: '',
-    invoiceDate: '',
-    buyerGSTIN: '',
-    sellerGSTIN: '27AAAPZ1234N1Z5',
-    invoiceAmount: '',
-    gstAmount: '',
-    totalAmount: ''
+    buyerName: '',
+    amount: '',
+    issueDate: '',
+    dueDate: '',
+    description: '',
   });
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
-    }
-  };
-
-  const handleFile = (file: File) => {
-    setFile(file);
-    setProcessing(true);
-    
-    // Simulate OCR extraction
-    setTimeout(() => {
+  const handleOdooSelect = (invoiceId: string) => {
+    const invoice = mockOdooInvoices.find(inv => inv.id === invoiceId);
+    if (invoice) {
+      setSelectedOdooInvoice(invoiceId);
       setFormData({
-        invoiceNumber: 'INV-2024-0891',
-        invoiceDate: '2025-03-12',
-        buyerGSTIN: '27AAAPZ9999N1Z1',
-        sellerGSTIN: '27AAAPZ1234N1Z5',
-        invoiceAmount: '420000',
-        gstAmount: '75600',
-        totalAmount: '495600'
+        invoiceNumber: invoice.invoiceNumber,
+        buyerName: invoice.buyerName,
+        amount: invoice.amount.toString(),
+        issueDate: new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        description: `Invoice from Odoo ERP - ${invoice.buyerName}`,
       });
-      setStep(2);
-      setProcessing(false);
       
-      // Start hash generation
-      simulateHashGeneration();
-      simulateIPFS();
-      simulateGSTVerification();
-    }, 1500);
+      // Auto-proceed to IPFS step
+      setTimeout(() => {
+        setCurrentStep(2);
+        processIPFS();
+      }, 500);
+    }
   };
 
-  const simulateHashGeneration = () => {
-    const fullHash = '3f4a8b9c2d1e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0';
-    let current = '';
-    let index = 0;
+  const processIPFS = () => {
+    setIpfsProcessing(true);
+    setIpfsProgress(0);
     
-    const interval = setInterval(() => {
-      if (index < fullHash.length) {
-        current += fullHash[index];
-        setHash(current);
-        index++;
-      } else {
-        clearInterval(interval);
+    // Simulate upload progress
+    const uploadInterval = setInterval(() => {
+      setIpfsProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(uploadInterval);
+          // Start pinning
+          setTimeout(() => {
+            const fakeCID = `QmX7f3a9b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9`;
+            setIpfsCID(fakeCID);
+            setIpfsProcessing(false);
+            
+            // Auto-proceed to hash generation
+            setTimeout(() => {
+              setCurrentStep(3);
+              generateHash();
+            }, 1000);
+          }, 2000);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+  };
+
+  const generateHash = () => {
+    setHashGenerating(true);
+    const fakeHash = '3f4a8b9c2d1e5f6a7b8c9d0e1f2a3b4c5d6e7f8a';
+    let currentHash = '';
+    
+    // Animate hash generation
+    const hashInterval = setInterval(() => {
+      if (currentHash.length >= fakeHash.length) {
+        clearInterval(hashInterval);
+        setHashGenerating(false);
+        setSha256Hash(fakeHash);
+        setCurrentStep(4);
+        return;
       }
+      currentHash += fakeHash[currentHash.length];
+      setSha256Hash(currentHash);
     }, 50);
   };
 
-  const simulateIPFS = () => {
-    setIpfsStatus('computing');
-    setTimeout(() => setIpfsStatus('pinning'), 1000);
-    setTimeout(() => setIpfsStatus('pinned'), 2500);
+  const handleSubmit = () => {
+    // Generate fake transaction hash
+    const fakeTxHash = `0x${Math.random().toString(16).substring(2, 66)}`;
+    setTxHash(fakeTxHash);
+    
+    setTimeout(() => {
+      navigate('/msme/invoices');
+    }, 2000);
   };
 
-  const simulateGSTVerification = () => {
-    setGstStatus('queued');
-    setTimeout(() => setGstStatus('checking'), 2000);
-    setTimeout(() => setGstStatus('verified'), 14000);
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate('/msme/invoices/1');
-  };
-
-  const invoiceValue = parseInt(formData.invoiceAmount) || 420000;
-  const percentage = ((financingAmount / invoiceValue) * 100).toFixed(0);
 
   return (
     <DashboardLayout role="msme">
-      <div className="space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
         <div>
-          <h1 className="font-display text-4xl font-bold mb-2">Upload New Invoice</h1>
-          <p className="text-gray-400">Submit your invoice for blockchain verification</p>
+          <h1 className="font-display text-3xl font-bold mb-2">Upload Invoice</h1>
+          <p className="text-gray-400">Register your invoice on the blockchain</p>
         </div>
 
         {/* Step Indicator */}
-        <div className="flex items-center justify-center space-x-2 sm:space-x-4 overflow-x-auto pb-2">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center flex-shrink-0">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-base transition-all ${
-                step > s ? 'bg-emerald text-white' : step === s ? 'bg-cyan text-navy' : 'bg-navy-lighter text-gray-400'
-              }`}>
-                {step > s ? '✓' : s}
+        <div className="card">
+          <div className="flex items-center justify-between">
+            {[
+              { num: 1, label: 'Pull from Odoo', icon: '📥' },
+              { num: 2, label: 'IPFS Pin', icon: '📌' },
+              { num: 3, label: 'Hash Generated', icon: '🔐' },
+              { num: 4, label: 'Submit', icon: '✅' },
+            ].map((step, idx) => (
+              <div key={step.num} className="flex items-center flex-1">
+                <div className="flex flex-col items-center flex-1">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl mb-2 transition-all ${
+                    currentStep >= step.num 
+                      ? 'bg-cyan text-navy' 
+                      : 'bg-navy-lighter text-gray-500'
+                  }`}>
+                    {step.icon}
+                  </div>
+                  <span className={`text-sm font-medium ${
+                    currentStep >= step.num ? 'text-white' : 'text-gray-500'
+                  }`}>
+                    {step.label}
+                  </span>
+                </div>
+                {idx < 3 && (
+                  <div className={`h-1 flex-1 mx-2 rounded ${
+                    currentStep > step.num ? 'bg-cyan' : 'bg-navy-lighter'
+                  }`}></div>
+                )}
               </div>
-              {s < 3 && <div className={`w-8 sm:w-16 h-0.5 mx-1 sm:mx-2 ${step > s ? 'bg-emerald' : 'bg-navy-lighter'}`}></div>}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* LEFT COLUMN - Upload Form */}
-          <div className="space-y-6">
-            {step === 1 && (
-              <div className="card">
-                <h3 className="font-display text-xl font-bold mb-4">Step 1: Upload Invoice</h3>
-                <div
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all ${
-                    dragActive ? 'border-cyan bg-cyan/5' : 'border-navy-lighter hover:border-cyan'
-                  }`}
-                >
-                  {!file ? (
-                    <>
-                      <div className="text-6xl mb-4 animate-bounce">☁️</div>
-                      <p className="text-lg mb-2">Drag & drop invoice PDF/XML here</p>
-                      <p className="text-gray-400 mb-4">or click to browse</p>
-                      <p className="text-sm text-gray-500">.pdf, .xml, .json — Max 10MB</p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-6xl mb-4">📄</div>
-                      <p className="text-lg font-medium mb-2">{file.name}</p>
-                      <p className="text-sm text-gray-400">{(file.size / 1024).toFixed(2)} KB · {file.type}</p>
-                      {processing && <p className="text-cyan mt-4">Processing with OCR...</p>}
-                    </>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.xml,.json"
-                    onChange={handleFileInput}
-                  />
+        {/* Step 1: Pull from Odoo */}
+        {currentStep === 1 && (
+          <div className="card space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">Step 1: Pull from Odoo ERP</h3>
+                <p className="text-gray-400 text-sm">Select an invoice from your Odoo instance</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Invoice from Odoo ERP</label>
+              <select 
+                className="input w-full"
+                value={selectedOdooInvoice}
+                onChange={(e) => handleOdooSelect(e.target.value)}
+              >
+                <option value="">-- Select an Odoo Invoice --</option>
+                {mockOdooInvoices.filter(inv => inv.odooStatus === 'posted').map(invoice => (
+                  <option key={invoice.id} value={invoice.id}>
+                    {invoice.invoiceNumber} - {invoice.buyerName} - ₹{invoice.amount.toLocaleString()}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedOdooInvoice && (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-emerald-400 font-medium">Pulled from Odoo ERP</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 2: IPFS Processing */}
+        {currentStep === 2 && (
+          <div className="card space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-teal-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">Step 2: IPFS Processing</h3>
+                <p className="text-gray-400 text-sm">Uploading and pinning to IPFS network</p>
+              </div>
+            </div>
+
+            {ipfsProcessing && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-400">📤 Uploading to IPFS...</span>
+                  <span className="text-cyan font-mono">{ipfsProgress}%</span>
+                </div>
+                <div className="w-full bg-navy-lighter rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-cyan to-teal-400 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${ipfsProgress}%` }}
+                  ></div>
                 </div>
               </div>
             )}
 
-            {step === 2 && (
-              <form onSubmit={handleSubmit} className="card space-y-6">
-                <h3 className="font-display text-xl font-bold">Step 2: OCR Extracted Data — Please Verify</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center space-x-2">
-                      <span>Invoice Number</span>
-                      <span className="badge-info text-xs">OCR</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input w-full"
-                      value={formData.invoiceNumber}
-                      onChange={(e) => setFormData({...formData, invoiceNumber: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center space-x-2">
-                      <span>Invoice Date</span>
-                      <span className="badge-info text-xs">OCR</span>
-                    </label>
-                    <input
-                      type="date"
-                      className="input w-full"
-                      value={formData.invoiceDate}
-                      onChange={(e) => setFormData({...formData, invoiceDate: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center space-x-2">
-                      <span>Buyer GSTIN</span>
-                      <span className="badge-info text-xs">OCR</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input w-full font-mono"
-                      value={formData.buyerGSTIN}
-                      onChange={(e) => setFormData({...formData, buyerGSTIN: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Seller GSTIN</label>
-                    <input
-                      type="text"
-                      className="input w-full font-mono bg-navy-lighter"
-                      value={formData.sellerGSTIN}
-                      readOnly
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center space-x-2">
-                      <span>Invoice Amount</span>
-                      <span className="badge-info text-xs">OCR</span>
-                    </label>
-                    <input
-                      type="number"
-                      className="input w-full"
-                      value={formData.invoiceAmount}
-                      onChange={(e) => setFormData({...formData, invoiceAmount: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2 flex items-center space-x-2">
-                      <span>GST Amount</span>
-                      <span className="badge-info text-xs">OCR</span>
-                    </label>
-                    <input
-                      type="number"
-                      className="input w-full"
-                      value={formData.gstAmount}
-                      onChange={(e) => setFormData({...formData, gstAmount: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Total Amount</label>
-                    <input
-                      type="number"
-                      className="input w-full bg-navy-lighter"
-                      value={formData.totalAmount}
-                      readOnly
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setStep(3)}
-                  className="btn-primary w-full"
-                >
-                  Continue to Financing Options →
-                </button>
-              </form>
+            {ipfsProgress === 100 && !ipfsCID && (
+              <div className="flex items-center space-x-2 text-amber-400">
+                <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                <span>📌 Pinning to nodes...</span>
+              </div>
             )}
 
-            {step === 3 && (
-              <form onSubmit={handleSubmit} className="card space-y-6">
-                <h3 className="font-display text-xl font-bold">Step 3: Financing Preference</h3>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-3">Select Preferred Lenders</label>
-                  <div className="space-y-2">
-                    {[
-                      { name: 'Bajaj Finserv NBFC', checked: true },
-                      { name: 'HDFC Bank TReDS', checked: true },
-                      { name: 'SBI Invoice Finance', checked: false },
-                      { name: 'Axis Bank Supply Chain', checked: false },
-                    ].map((lender) => (
-                      <label key={lender.name} className="flex items-center space-x-3 p-3 bg-navy rounded-lg cursor-pointer hover:bg-navy-lighter transition-colors">
-                        <input type="checkbox" defaultChecked={lender.checked} className="w-4 h-4" />
-                        <span>{lender.name}</span>
-                      </label>
-                    ))}
+            {ipfsCID && (
+              <div className="space-y-4">
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-emerald-400 font-medium">✅ Pinned Successfully</span>
                   </div>
+                  <div className="mt-3">
+                    <label className="text-xs text-gray-400 mb-1 block">IPFS CID</label>
+                    <div className="flex items-center space-x-2">
+                      <code className="flex-1 bg-navy px-3 py-2 rounded font-mono text-sm text-teal-400">
+                        {ipfsCID}
+                      </code>
+                      <button 
+                        onClick={() => copyToClipboard(ipfsCID)}
+                        className="btn-secondary text-sm py-2"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">Pinned across 8 nodes</p>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
 
-                <div>
-                  <label className="block text-sm font-medium mb-3">Financing Amount Required</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max={invoiceValue}
-                    value={financingAmount}
-                    onChange={(e) => setFinancingAmount(parseInt(e.target.value))}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-400 mt-2">
-                    <span>₹0</span>
-                    <span className="text-2xl font-bold text-cyan">₹{financingAmount.toLocaleString()}</span>
-                    <span>₹{invoiceValue.toLocaleString()}</span>
+        {/* Step 3: Hash Generation */}
+        {currentStep === 3 && (
+          <div className="card space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">Step 3: Hash Generation</h3>
+                <p className="text-gray-400 text-sm">Computing SHA-256 hash from IPFS content</p>
+              </div>
+            </div>
+
+            {hashGenerating && (
+              <div className="flex items-center space-x-2 text-purple-400">
+                <div className="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                <span>🔐 Computing SHA-256 Hash...</span>
+              </div>
+            )}
+
+            {sha256Hash && (
+              <div className="space-y-4">
+                <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                  <label className="text-xs text-gray-400 mb-2 block">SHA-256 Hash</label>
+                  <div className="flex items-center space-x-2">
+                    <code className="flex-1 bg-navy px-3 py-2 rounded font-mono text-sm text-purple-400 break-all">
+                      {sha256Hash}
+                    </code>
+                    <button 
+                      onClick={() => copyToClipboard(sha256Hash)}
+                      className="btn-secondary text-sm py-2"
+                    >
+                      Copy
+                    </button>
                   </div>
-                  <p className="text-center text-sm text-gray-400 mt-2">
-                    You are requesting {percentage}% of invoice value
+                  <p className="text-xs text-gray-400 mt-3">
+                    This hash will be written to Hyperledger Fabric blockchain
                   </p>
                 </div>
-
-                <button type="submit" className="btn-primary w-full flex items-center justify-center space-x-2">
-                  <span>Submit to Blockchain</span>
-                  <span>→</span>
-                </button>
-              </form>
+              </div>
             )}
           </div>
+        )}
 
-          {/* RIGHT COLUMN - Live Preview */}
-          <div className="space-y-6">
-            <LivePreviewPanel hash={hash} ipfsStatus={ipfsStatus} gstStatus={gstStatus} />
+        {/* Step 4: Submit */}
+        {currentStep === 4 && (
+          <div className="card space-y-6">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">Step 4: Review & Submit</h3>
+                <p className="text-gray-400 text-sm">Confirm details and register on blockchain</p>
+              </div>
+            </div>
+
+            {/* Review Summary */}
+            <div className="bg-navy-lighter rounded-lg p-4 space-y-3">
+              <h4 className="font-semibold text-white mb-3">Invoice Summary</h4>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-gray-400">Invoice Number:</span>
+                  <p className="text-white font-mono">{formData.invoiceNumber}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Buyer:</span>
+                  <p className="text-white">{formData.buyerName}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Amount:</span>
+                  <p className="text-white font-semibold">₹{parseInt(formData.amount).toLocaleString()}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">IPFS CID:</span>
+                  <p className="text-teal-400 font-mono text-xs">{ipfsCID.substring(0, 20)}...</p>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-gray-400">SHA-256 Hash:</span>
+                  <p className="text-purple-400 font-mono text-xs break-all">{sha256Hash}</p>
+                </div>
+              </div>
+            </div>
+
+            {!txHash ? (
+              <button 
+                onClick={handleSubmit}
+                className="btn-primary w-full flex items-center justify-center space-x-2"
+              >
+                <span>Submit to Blockchain</span>
+                <span>→</span>
+              </button>
+            ) : (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-emerald-400 font-medium">✅ Invoice registered on-chain successfully</span>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Transaction Hash</label>
+                  <code className="block bg-navy px-3 py-2 rounded font-mono text-xs text-emerald-400 break-all">
+                    {txHash}
+                  </code>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </DashboardLayout>
-  );
-}
-
-function LivePreviewPanel({ hash, ipfsStatus, gstStatus }: { hash: string; ipfsStatus: string; gstStatus: string }) {
-  return (
-    <>
-      {/* Hash Preview */}
-      <div className="card">
-        <h3 className="font-display text-lg font-bold mb-4">Cryptographic Fingerprint</h3>
-        <div className="bg-navy rounded-lg p-4 mb-3">
-          <p className="text-xs text-gray-400 mb-2">SHA-256:</p>
-          <p className="font-mono text-sm text-cyan break-all">{hash || 'Waiting for file...'}</p>
-        </div>
-        <p className="text-xs text-gray-400">This hash will be stored immutably on Hyperledger Fabric</p>
-      </div>
-
-      {/* IPFS Preview */}
-      <div className="card">
-        <h3 className="font-display text-lg font-bold mb-4">IPFS Storage</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Status:</span>
-            <span className={`badge-${
-              ipfsStatus === 'pinned' ? 'success' : ipfsStatus === 'idle' ? 'info' : 'warning'
-            }`}>
-              {ipfsStatus === 'idle' ? 'Waiting' : ipfsStatus === 'computing' ? 'Computing...' : ipfsStatus === 'pinning' ? 'Pinning...' : '✅ Pinned'}
-            </span>
-          </div>
-          {ipfsStatus === 'pinned' && (
-            <>
-              <div className="bg-navy rounded-lg p-3">
-                <p className="text-xs text-gray-400 mb-1">CID:</p>
-                <p className="font-mono text-xs text-cyan">QmX7f3a9b2c1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d</p>
-              </div>
-              <p className="text-xs text-gray-400">Your document is stored across 8 IPFS nodes globally</p>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* GST Verification */}
-      <div className="card">
-        <h3 className="font-display text-lg font-bold mb-4">GSTN Verification</h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Status:</span>
-            <span className={`badge-${
-              gstStatus === 'verified' ? 'success' : gstStatus === 'idle' ? 'info' : 'warning'
-            }`}>
-              {gstStatus === 'idle' ? 'Queued' : gstStatus === 'queued' ? 'Queued' : gstStatus === 'checking' ? 'Checking...' : '✅ Verified'}
-            </span>
-          </div>
-          {gstStatus === 'verified' && (
-            <>
-              <p className="text-sm text-emerald">Buyer GSTIN confirmed active as of today</p>
-              <span className="badge-info text-xs">Response in ~12 sec</span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* FAB Token Preview */}
-      <div className="card">
-        <h3 className="font-display text-lg font-bold mb-4">FAB Token (will be minted)</h3>
-        <div className="flex justify-center mb-4">
-          <div className={`w-24 h-24 border-4 rounded-lg transform rotate-45 transition-all ${
-            gstStatus === 'verified' ? 'border-amber bg-amber/10' : 'border-navy-lighter'
-          }`}></div>
-        </div>
-        <p className="text-sm text-gray-400 text-center">
-          Token will be minted once GST verification completes
-        </p>
-      </div>
-    </>
   );
 }

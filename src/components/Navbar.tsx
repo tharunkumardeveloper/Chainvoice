@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Logo from '../components/Logo';
+import { clearUser } from '../utils/auth';
 
 interface NavbarProps {
   role?: 'msme' | 'lender' | 'regulator';
@@ -13,6 +14,7 @@ export default function Navbar({ role }: NavbarProps) {
   const [notificationCount] = useState(3);
 
   const handleLogout = () => {
+    clearUser();
     navigate('/');
   };
 
@@ -47,7 +49,8 @@ export default function Navbar({ role }: NavbarProps) {
                   <>
                     <Link to="/msme/dashboard" className="hover:text-cyan transition-colors">Dashboard</Link>
                     <Link to="/msme/invoices" className="hover:text-cyan transition-colors">My Invoices</Link>
-                    <Link to="/msme/tokens" className="hover:text-cyan transition-colors">FAB Tokens</Link>
+                    <Link to="/msme/erp" className="hover:text-cyan transition-colors">ERP Integration</Link>
+                    <Link to="/msme/ipfs" className="hover:text-cyan transition-colors">IPFS Storage</Link>
                     <Link to="/msme/financing" className="hover:text-cyan transition-colors">Apply Financing</Link>
                   </>
                 )}
@@ -153,7 +156,8 @@ export default function Navbar({ role }: NavbarProps) {
                       <>
                         <Link to="/msme/dashboard" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Dashboard</Link>
                         <Link to="/msme/invoices" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>My Invoices</Link>
-                        <Link to="/msme/tokens" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>FAB Tokens</Link>
+                        <Link to="/msme/erp" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>ERP Integration</Link>
+                        <Link to="/msme/ipfs" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>IPFS Storage</Link>
                         <Link to="/msme/financing" className="block py-2 hover:text-cyan transition-colors" onClick={() => setShowMobileMenu(false)}>Apply Financing</Link>
                       </>
                     )}
