@@ -11,10 +11,10 @@ export default function Portfolio() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Financed" value="$2.4M" icon="💰" />
+          <StatCard title="Total Financed" value="₹19.92Cr" icon="💰" />
           <StatCard title="Active Invoices" value="156" icon="📊" />
           <StatCard title="Avg. Interest Rate" value="3.8%" icon="📈" />
-          <StatCard title="Expected Returns" value="$91,200" icon="💵" trend="up" trendValue="+5.2%" />
+          <StatCard title="Expected Returns" value="₹75.7L" icon="💵" trend="up" trendValue="+5.2%" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -67,15 +67,15 @@ export default function Portfolio() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">This Week</span>
-                  <span className="font-bold">$125K</span>
+                  <span className="font-bold">₹1.04Cr</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">This Month</span>
-                  <span className="font-bold">$480K</span>
+                  <span className="font-bold">₹3.98Cr</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Next Month</span>
-                  <span className="font-bold">$620K</span>
+                  <span className="font-bold">₹5.15Cr</span>
                 </div>
               </div>
             </div>

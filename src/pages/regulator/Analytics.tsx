@@ -11,7 +11,7 @@ export default function Analytics() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Total Volume" value="$45.2M" icon="💰" trend="up" trendValue="+22.5%" />
+          <StatCard title="Total Volume" value="₹375.2Cr" icon="💰" trend="up" trendValue="+22.5%" />
           <StatCard title="Avg. Interest Rate" value="3.8%" icon="📈" />
           <StatCard title="Verification Time" value="4.2h" icon="⏱️" trend="down" trendValue="-15%" />
           <StatCard title="Success Rate" value="94.2%" icon="✓" />

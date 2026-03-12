@@ -33,11 +33,11 @@ export default function Disburse() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Invoice Amount</p>
-                  <p className="font-mono font-bold text-2xl">$18,000</p>
+                  <p className="font-mono font-bold text-2xl">₹14,94,000</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Financing Amount</p>
-                  <p className="font-mono font-bold text-2xl text-cyan">$16,200</p>
+                  <p className="font-mono font-bold text-2xl text-cyan">₹13,44,600</p>
                 </div>
               </div>
             </div>
@@ -58,19 +58,19 @@ export default function Disburse() {
                 <div className="bg-navy rounded-lg p-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Financing Amount</span>
-                    <span className="font-mono font-bold">$16,200</span>
+                    <span className="font-mono font-bold">₹13,44,600</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Interest (3.5%)</span>
-                    <span className="font-mono">$567</span>
+                    <span className="font-mono">₹47,061</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Processing Fee</span>
-                    <span className="font-mono">$50</span>
+                    <span className="font-mono">₹4,150</span>
                   </div>
                   <div className="border-t border-navy-lighter pt-2 flex justify-between">
                     <span className="font-bold">Expected Return</span>
-                    <span className="font-mono font-bold text-emerald text-xl">$16,817</span>
+                    <span className="font-mono font-bold text-emerald text-xl">₹13,95,811</span>
                   </div>
                 </div>
 
@@ -128,7 +128,7 @@ export default function Disburse() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Estimated Fee</span>
-                  <span className="font-mono font-bold">~$8.50</span>
+                  <span className="font-mono font-bold">~₹706</span>
                 </div>
               </div>
             </div>

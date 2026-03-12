@@ -15,15 +15,15 @@ export default function Financing() {
               <div>
                 <label className="block text-sm font-medium mb-2">Select Invoice</label>
                 <select className="input w-full">
-                  <option>INV-2024-1001 - $15,000 (Verified)</option>
-                  <option>INV-2024-1003 - $8,750 (Verified)</option>
+                  <option>INV-2024-1001 - ₹12,45,000 (Verified)</option>
+                  <option>INV-2024-1003 - ₹7,26,250 (Verified)</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium mb-2">Financing Amount</label>
-                <input type="number" className="input w-full" placeholder="12000" />
-                <p className="text-sm text-gray-400 mt-1">Maximum: $13,500 (90% of invoice value)</p>
+                <input type="number" className="input w-full" placeholder="996000" />
+                <p className="text-sm text-gray-400 mt-1">Maximum: ₹11,20,500 (90% of invoice value)</p>
               </div>
 
               <div>
@@ -38,19 +38,19 @@ export default function Financing() {
               <div className="bg-navy rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Requested Amount</span>
-                  <span className="font-mono font-bold">$12,000</span>
+                  <span className="font-mono font-bold">₹9,96,000</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Interest (2.5%)</span>
-                  <span className="font-mono">$300</span>
+                  <span className="font-mono">₹24,900</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Processing Fee</span>
-                  <span className="font-mono">$50</span>
+                  <span className="font-mono">₹4,150</span>
                 </div>
                 <div className="border-t border-navy-lighter pt-2 flex justify-between">
                   <span className="font-bold">Total Repayment</span>
-                  <span className="font-mono font-bold text-cyan text-xl">$12,350</span>
+                  <span className="font-mono font-bold text-cyan text-xl">₹10,25,050</span>
                 </div>
               </div>
 
@@ -64,7 +64,7 @@ export default function Financing() {
               <div className="space-y-3">
                 <div className="bg-navy rounded-lg p-3">
                   <p className="font-mono text-sm">INV-2024-1002</p>
-                  <p className="font-bold text-cyan">$18,000</p>
+                  <p className="font-bold text-cyan">₹14,94,000</p>
                   <span className="badge-warning mt-2">Pending</span>
                 </div>
               </div>
