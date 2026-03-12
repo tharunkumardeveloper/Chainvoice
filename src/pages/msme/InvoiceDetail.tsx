@@ -1,10 +1,32 @@
 import { Link, useParams } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import { getInvoiceById } from '../../data/mockInvoices';
+import { downloadInvoicePDF } from '../../utils/pdfGenerator';
 
 export default function InvoiceDetail() {
   const { id } = useParams();
   const invoice = getInvoiceById(id || '1');
+
+  const handleDownloadPDF = () => {
+    if (invoice) {
+      downloadInvoicePDF({
+        invoiceNumber: invoice.invoiceNumber,
+        issueDate: invoice.issueDate,
+        dueDate: invoice.dueDate,
+        sellerName: invoice.sellerName,
+        sellerGSTIN: invoice.sellerGSTIN,
+        buyerName: invoice.buyerName,
+        buyerGSTIN: invoice.buyerGSTIN,
+        items: invoice.items,
+        amount: invoice.amount,
+        gstAmount: invoice.gstAmount,
+        totalAmount: invoice.totalAmount,
+        ipfsHash: invoice.ipfsHash,
+        sha256Hash: invoice.sha256Hash,
+        blockchainTxHash: invoice.blockchainTxHash,
+      });
+    }
+  };
 
   if (!invoice) {
     return (
@@ -365,8 +387,8 @@ export default function InvoiceDetail() {
               <div className="space-y-6">
                 {[
                   { status: 'complete', icon: '✅', title: 'Invoice Uploaded', time: '12 Mar, 14:30', desc: 'Document pinned to IPFS: QmX7f3a...' },
-                  { status: 'complete', icon: '✅', title: 'GST Verification', time: '12 Mar, 14:30:34', desc: 'GSTN API confirmed: Buyer GSTIN active' },
-                  { status: 'complete', icon: '✅', title: 'FAB Token Minted', time: '12 Mar, 14:31', desc: 'Token ID: FAB#0x7f3a — Non-transferable' },
+                  { status: 'complete', icon: '✅', title: 'Hash Generated', time: '12 Mar, 14:30:34', desc: 'SHA-256 hash computed and stored on blockchain' },
+                  { status: 'complete', icon: '✅', title: 'Blockchain Registration', time: '12 Mar, 14:31', desc: 'Hash registered on Hyperledger Fabric' },
                   { status: 'complete', icon: '✅', title: 'Financing Request Sent', time: '12 Mar, 14:35', desc: 'Sent to: Bajaj Finserv, HDFC Bank' },
                   { status: 'current', icon: '🔵', title: 'Lender Review', time: 'In Progress', desc: 'Bajaj Finserv reviewing...' },
                   { status: 'pending', icon: '⬜', title: 'Disbursement', time: 'Pending', desc: '' },
@@ -392,11 +414,11 @@ export default function InvoiceDetail() {
               </div>
             </div>
 
-            {/* FAB Token Card */}
-            <div className="card bg-gradient-to-br from-amber/5 to-transparent border-amber/30">
-              <h3 className="font-display text-xl font-bold mb-6">FAB Token</h3>
+            {/* Blockchain Verification Card */}
+            <div className="card bg-gradient-to-br from-purple/5 to-transparent border-purple/30">
+              <h3 className="font-display text-xl font-bold mb-6">Blockchain Verification</h3>
               <div className="flex justify-center mb-6">
-                <div className="w-24 h-24 border-4 border-amber bg-amber/10 rounded-lg transform rotate-45 shadow-lg shadow-amber/20"></div>
+                <div className="w-24 h-24 border-4 border-purple bg-purple/10 rounded-lg transform rotate-45 shadow-lg shadow-purple/20"></div>
               </div>
               <div className="space-y-3 text-center">
                 <div>
